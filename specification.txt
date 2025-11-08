@@ -1,0 +1,27 @@
+HTML TAGS USED:
+1. <html>: Defines the root of the HTML document
+2. <head>: Contains metadata, stylesheets, and script links
+3. <body>: Contains all visible page content
+4. <nav>: Used for the site’s responsive navigation bar
+5. <section>: Groups related content (cards, footer, etc.)
+6. <div>: General container for layout structure
+7. <h1> to <h6>: Used for headings and section titles
+8. <p>: Used for paragraph text and descriptions
+9. <a>: Creates links and Bootstrap buttons
+10. <footer>: Defines the footer with credits and social links
+
+CSS PROPERTIES USED:
+1. background-color: Sets the main color theme and section backgrounds
+2. color: Sets text color
+3. padding: Adds spacing inside containers
+4. margin - Adds spacing between cards and layout elements
+5. border-radius: Rounds corners to make stuff look nicer
+
+JAVASCRIPT USAGE:
+JavaScript is used to control the Tideman simulator’s logic (collecting votes, sorting pairs, and visualizing results) as well as load each of the 5 steps on the how-it-works page
+
+BOOTSTRAP USAGE:
+I used Bootstrap many, many, times in my HTML code to provide layout through the grid system. I also used bootstrap for the navigation bar, cards, and and other components. Bootstrap allows for mobile-friendly websites and minimal CSS out of the box.
+
+REFLECTION:
+It was interesting building this website without some modern web design tools like React. Maybe they aren't so necessary after all ¯\_(ツ)_/¯

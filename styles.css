@@ -1,0 +1,146 @@
+/* ===========================
+   Base Layout
+   =========================== */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: #f8f9fa;
+    line-height: 1.5;
+    margin: 0;
+    padding: 0;
+}
+
+main {
+    padding-top: 1.5rem;
+    padding-bottom: 2rem;
+}
+
+/* ===========================
+   Navbar / Theme
+   =========================== */
+.bg-tideman {
+    background-color: #A41D30 !important;
+}
+
+.navbar-brand {
+    font-weight: 600;
+}
+
+/* ===== Main Section ===== */
+.main-section {
+    background-color: #A41D30;
+    color: white;
+    padding: 80px 20px;
+    border-radius: 0 0 25px 25px;
+}
+
+.main-section-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+}
+
+.main-section-subtitle {
+    font-size: 1.1rem;
+    max-width: 750px;
+    margin: 20px auto;
+}
+
+/* ===== Button Stack ===== */
+.btn-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-top: 25px;
+}
+
+.btn-stack a {
+    width: 220px;
+}
+
+/* ===== Cards ===== */
+.card-equal-height {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* ===== Mobile Tweaks ===== */
+@media (max-width: 768px) {
+    .card {
+        margin-bottom: 1.5rem !important;
+    }
+}
+
+/* ===========================
+   Code Blocks
+   =========================== */
+.code-block {
+    background-color: #272822;
+    color: #f8f8f2;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    overflow-x: auto;
+    font-size: 0.9rem;
+}
+
+/* ===========================
+   Simulator Styles
+   =========================== */
+.highlight-winner {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.ballot-row {
+    background-color: #ffffff;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+/* ===========================
+   How-It-Works Step Reveal
+   =========================== */
+.tideman-step {
+    display: none;
+}
+
+.tideman-step.visible {
+    display: block;
+}
+
+/* ===========================
+   Footer (Bootstrap-based)
+   =========================== */
+footer {
+    color: #fff;
+}
+
+footer h5, footer h6 {
+    color: #fff;
+    font-weight: 600;
+}
+
+footer p {
+    margin-bottom: 0.25rem;
+}
+
+footer .btn-outline-light {
+    border-color: #fff;
+}
+
+footer .btn-outline-light:hover {
+    background-color: #fff;
+    color: #A41D30;
+}
+
+/* ===========================
+   Responsive Adjustments
+   =========================== */
+@media (min-width: 768px) {
+    .main-section {
+        padding: 4rem 2rem;
+    }
+}

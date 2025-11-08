@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Tideman Code Walkthrough</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS + JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+
+    <!-- Font Awesome for social icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- Custom CSS + JS -->
+    <link href="styles.css" rel="stylesheet">
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-md navbar-dark bg-tideman">
+        <a class="navbar-brand" href="index.html">Tideman Visualizer</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsMain" aria-controls="navbarsMain" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarsMain">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="simulator.html">Simulator</a></li>
+                <li class="nav-item"><a class="nav-link" href="how-it-works.html">How It Works</a></li>
+                <li class="nav-item active"><a class="nav-link" href="code-walkthrough.html">Code Walkthrough</a></li>
+                <li class="nav-item"><a class="nav-link" href="about.html">About</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container mt-4" id="code-page">
+        <header class="mb-3">
+            <h1>Tideman Side-by-Side Code Walkthrough</h1>
+            <p>
+                This page shows the core pieces of the CS50 Tideman C implementation
+                side-by-side with the JavaScript used in the simulator. The logic is the same;
+                only the language and syntax differ.
+            </p>
+        </header>
+
+        <!-- Data structures -->
+        <section class="mb-4">
+            <h3>Global Data Structures</h3>
+            <p>
+                Both versions track preferences, locked edges, and pairs of candidates.
+                The C version uses fixed-size arrays; the JavaScript version uses dynamic arrays.
+            </p>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <h5>C (globals)</h5>
+                    <pre class="code-block"><code>#define MAX 9
+
+// preferences[i][j] is number of voters who prefer i over j
+int preferences[MAX][MAX];
+
+// locked[i][j] means i is locked in over j
+bool locked[MAX][MAX];
+
+typedef struct
+{
+    int winner;
+    int loser;
+} pair;
+
+// Array of candidates
+string candidates[MAX];
+pair pairs[MAX * (MAX - 1) / 2];
+
+int pair_count;
+int candidate_count;</code></pre>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <h5>JavaScript (globals)</h5>
+                    <pre class="code-block"><code>// In script.js
+
+let candidates = [];
+let ballots = [];
+let preferences = [];
+let locked = [];
+let pairs = [];</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Overall pipeline -->
+        <section class="mb-4">
+            <h3>Overall Pipeline</h3>
+            <p>
+                Both implementations follow the same sequence: record preferences, add pairs,
+                sort them by strength, lock them without creating cycles, and then find the winner.
+            </p>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <h5>C: high-level flow (simplified)</h5>
+                    <pre class="code-block"><code>int main(int argc, string argv[])
+{
+    // ... read candidates, read voters, record_preferences ...
+
+    add_pairs();
+    sort_pairs();
+    lock_pairs();
+    print_winner();
+
+    return 0;
+}</code></pre>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <h5>JavaScript: <code>runTideman()</code></h5>
+                    <pre class="code-block"><code>function runTideman() {
+    const n = candidates.length;
+
+    preferences = Array.from({ length: n }, () =&gt; Array(n).fill(0));
+    locked = Array.from({ length: n }, () =&gt; Array(n).fill(false));
+    pairs = [];
+
+    recordPreferences();
+    addPairs();
+
+    // sort_pairs
+    pairs.sort((a, b) =&gt; b.strength - a.strength);
+
+    lockPairs();
+}</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Record preferences -->
+        <section class="mb-4">
+            <h3>Recording Preferences</h3>
+            <p>
+                After reading all ballots, both implementations update the <code>preferences</code>
+                matrix to count how many voters prefer each candidate over another.
+            </p>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <h5>C: <code>record_preferences</code></h5>
+                    <pre class="code-block"><code>void record_preferences(int ranks[])
+{
+    int worst_rank = candidate_count - 1;
+
+    for (int i = 0; i &lt; worst_rank; i++)
+    {
+        for (int j = i + 1; j &lt;= worst_rank; j++)
+        {
+            preferences[ranks[i]][ranks[j]]++;
+        }
+    }
+}</code></pre>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <h5>JavaScript: <code>recordPreferences</code></h5>
+                    <pre class="code-block"><code>function recordPreferences() {
+    const n = candidates.length;
+
+    ballots.forEach(ranks =&gt; {
+        for (let i = 0; i &lt; n; i++) {
+            for (let j = i + 1; j &lt; n; j++) {
+                const preferred = ranks[i];
+                const lessPreferred = ranks[j];
+                preferences[preferred][lessPreferred]++;
+            }
+        }
+    });
+}</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Add pairs -->
+        <section class="mb-4">
+            <h3>Building Winner–Loser Pairs</h3>
+            <p>
+                Next, both versions compare head-to-head preferences and add a pair whenever
+                one candidate beats another (ignoring ties).
+            </p>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <h5>C: <code>add_pairs</code></h5>
+                    <pre class="code-block"><code>void add_pairs(void)
+{
+    for (int i = 0; i &lt; candidate_count - 1; i++)
+    {
+        for (int j = i + 1; j &lt; candidate_count; j++)
+        {
+            int prefers_i = preferences[i][j];
+            int prefers_j = preferences[j][i];
+
+            if (prefers_i &gt; prefers_j)
+            {
+                pair new_pair = {i, j};
+                pairs[pair_count] = new_pair;
+                pair_count++;
+            }
+            else if (prefers_j &gt; prefers_i)
+            {
+                pair new_pair = {j, i};
+                pairs[pair_count] = new_pair;
+                pair_count++;
+            }
+        }
+    }
+}</code></pre>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <h5>JavaScript: <code>addPairs</code></h5>
+                    <pre class="code-block"><code>function addPairs() {
+    const n = candidates.length;
+
+    for (let i = 0; i &lt; n - 1; i++) {
+        for (let j = i + 1; j &lt; n; j++) {
+            const prefersI = preferences[i][j];
+            const prefersJ = preferences[j][i];
+
+            if (prefersI &gt; prefersJ) {
+                pairs.push({
+                    winner: i,
+                    loser: j,
+                    strength: prefersI - prefersJ
+                });
+            } else if (prefersJ &gt; prefersI) {
+                pairs.push({
+                    winner: j,
+                    loser: i,
+                    strength: prefersJ - prefersI
+                });
+            }
+        }
+    }
+}</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sort pairs -->
+        <section class="mb-4">
+            <h3>Sorting Pairs by Strength of Victory</h3>
+            <p>
+                The C code uses bubble sort; JavaScript uses <code>Array.sort</code> with a comparator.
+                Both sort pairs in descending order of victory strength.
+            </p>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <h5>C: <code>sort_pairs</code></h5>
+                    <pre class="code-block"><code>int pair_strength(pair p)
+{
+    return preferences[p.winner][p.loser];
+}
+
+void sort_pairs(void)
+{
+    for (int i = 0; i &lt; pair_count - 1; i++)
+    {
+        bool swapped = false;
+
+        for (int j = 0; j &lt; pair_count - i - 1; j++)
+        {
+            if (pair_strength(pairs[j]) &lt; pair_strength(pairs[j + 1]))
+            {
+                pair temp = pairs[j];
+                pairs[j] = pairs[j + 1];
+                pairs[j + 1] = temp;
+                swapped = true;
+            }
+        }
+
+        if (!swapped)
+        {
+            break;
+        }
+    }
+}</code></pre>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <h5>JavaScript: sort step in <code>runTideman</code></h5>
+                    <pre class="code-block"><code>// sort_pairs (JS)
+pairs.sort((a, b) =&gt; b.strength - a.strength);</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Lock pairs & cycle detection -->
+        <section class="mb-4">
+            <h3>Locking Pairs Without Creating Cycles</h3>
+            <p>
+                Both versions iterate through the sorted candidate pairs and lock each directed edge
+                only if doing so would not introduce a cycle in the existing graph of victories.
+                The C implementation performs this check recursively through a depth-first search (DFS)
+                in <code>would_create_cycle</code>, exploring every possible path from the potential
+                loser back to the winner. The JavaScript implementation achieves the same effect
+                using a DFS helper function, <code>hasPath</code>, which detects whether a path already
+                exists between two nodes before <code>lockPairs</code> adds the edge.
+            </p>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <h5>C: <code>would_create_cycle</code> and <code>lock_pairs</code></h5>
+                    <pre class="code-block"><code>bool would_create_cycle(int winner, int loser)
+{
+    for (int next_candidate = 0;
+         next_candidate &lt; candidate_count;
+         next_candidate++)
+    {
+        if (locked[loser][next_candidate])
+        {
+            if (next_candidate == winner)
+            {
+                return true;
+            }
+            else if (would_create_cycle(winner, next_candidate))
+            {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+void lock_pairs(void)
+{
+    for (int i = 0; i &lt; pair_count; i++)
+    {
+        int winner = pairs[i].winner;
+        int loser = pairs[i].loser;
+
+        if (!would_create_cycle(winner, loser))
+        {
+            locked[winner][loser] = true;
+        }
+    }
+}</code></pre>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <h5>JavaScript: <code>createsCycle</code>, <code>hasPath</code>, and <code>lockPairs</code></h5>
+                    <pre class="code-block"><code>function createsCycle(winner, loser) {
+    return hasPath(loser, winner, new Set());
+}
+
+function hasPath(start, target, visited) {
+    if (start === target) {
+        return true;
+    }
+    visited.add(start);
+
+    for (let next = 0; next &lt; candidates.length; next++) {
+        if (locked[start][next] && !visited.has(next)) {
+            if (hasPath(next, target, visited)) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+function lockPairs() {
+    pairs.forEach(pair =&gt; {
+        if (!createsCycle(pair.winner, pair.loser)) {
+            locked[pair.winner][pair.loser] = true;
+        }
+    });
+}</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Finding the winner -->
+        <section class="mb-4">
+            <h3>Finding the Tideman Winner</h3>
+            <p>
+                The winner is the candidate with no incoming edges in the locked graph.
+                In C, <code>print_winner</code> prints that name. In JavaScript,
+                <code>findWinnerIndex</code> returns the index; the simulator then
+                displays the name or reports that there is no clear winner.
+            </p>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <h5>C: <code>print_winner</code></h5>
+                    <pre class="code-block"><code>void print_winner(void)
+{
+    for (int j = 0; j &lt; candidate_count; j++)
+    {
+        bool has_connected_edge = false;
+
+        for (int i = 0; i &lt; candidate_count; i++)
+        {
+            if (locked[i][j])
+            {
+                has_connected_edge = true;
+            }
+        }
+
+        if (!has_connected_edge)
+        {
+            printf("%s\n", candidates[j]);
+            return;
+        }
+    }
+}</code></pre>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <h5>JavaScript: <code>findWinnerIndex</code> and display</h5>
+                    <pre class="code-block"><code>function findWinnerIndex() {
+    const n = candidates.length;
+    const sources = [];
+
+    for (let j = 0; j &lt; n; j++) {
+        let hasIncoming = false;
+        for (let i = 0; i &lt; n; i++) {
+            if (locked[i][j]) {
+                hasIncoming = true;
+                break;
+            }
+        }
+        if (!hasIncoming) {
+            sources.push(j);
+        }
+    }
+
+    if (sources.length === 1) {
+        return sources[0];
+    }
+    return null;  // zero or multiple sources
+}</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Summary -->
+        <section class="mb-5">
+            <h3>Summary</h3>
+            <p>
+                The simulator is a JavaScript rendition of the original C algorithm,
+                with same data structures, same steps, and the same behavior.
+                HTML and CSS power the visual rendering of the JS algorithm,
+                allowing a deeper look behind the scenes.
+            </p>
+        </section>
+    </main>
+
+    <!-- Bootstrap Footer -->
+    <footer class="text-center text-lg-start text-white" style="background-color: #A41D30;">
+        <div class="container p-4">
+            <div class="row">
+                <!-- About -->
+                <div class="col-lg-6 col-md-12 mb-4 mb-md-0 text-md-left">
+                    <h5 class="text-uppercase">Tideman Election Visualizer</h5>
+                    <p class="text-white-50">
+                        An interactive demo of the Tideman ranked-choice algorithm,
+                        built with HTML, CSS, JS, and Bootstrap, based on my initial code in C.
+                    </p>
+                </div>
+
+                <!-- Socials -->
+                <div class="col-lg-6 col-md-12 mb-4 mb-md-0 text-md-right">
+                    <h6 class="text-uppercase mb-3">Connect</h6>
+                    <a href="https://github.com/SwiftlyNoah" target="_blank" class="btn btn-outline-light btn-sm mx-1" title="GitHub">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    <a href="https://www.linkedin.com/in/noahbrauner/" target="_blank" class="btn btn-outline-light btn-sm mx-1" title="LinkedIn">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                    <a href="mailto:nbrauner@college.harvard.edu" class="btn btn-outline-light btn-sm mx-1" title="Email">
+                        <i class="fas fa-envelope"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center p-3" style="background-color: rgba(0,0,0,0.15); font-size: 0.9rem;">
+            Created by <strong>Noah Brauner</strong> for CS50 2025 Problem Set 8
+        </div>
+    </footer>
+</body>
+</html>

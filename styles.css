@@ -1,6 +1,4 @@
-/* ===========================
-   Base Layout
-   =========================== */
+/* Base Layout */
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     background-color: #f8f9fa;
@@ -14,9 +12,7 @@ main {
     padding-bottom: 2rem;
 }
 
-/* ===========================
-   Navbar / Theme
-   =========================== */
+/* Navbar/Theme  */
 .bg-tideman {
     background-color: #A41D30 !important;
 }
@@ -25,7 +21,7 @@ main {
     font-weight: 600;
 }
 
-/* ===== Main Section ===== */
+/* Main Section */
 .main-section {
     background-color: #A41D30;
     color: white;
@@ -44,7 +40,7 @@ main {
     margin: 20px auto;
 }
 
-/* ===== Button Stack ===== */
+/* Button Stack */
 .btn-stack {
     display: flex;
     flex-direction: column;
@@ -57,7 +53,7 @@ main {
     width: 220px;
 }
 
-/* ===== Cards ===== */
+/* Cards */
 .card-equal-height {
     flex: 1;
     display: flex;
@@ -65,16 +61,17 @@ main {
     justify-content: space-between;
 }
 
-/* ===== Mobile Tweaks ===== */
+/* Mobile Tweaks */
 @media (max-width: 768px) {
     .card {
         margin-bottom: 1.5rem !important;
     }
+    .main-section {
+        padding: 4rem 2rem;
+    }
 }
 
-/* ===========================
-   Code Blocks
-   =========================== */
+/* Code Blocks */
 .code-block {
     background-color: #272822;
     color: #f8f8f2;
@@ -84,9 +81,7 @@ main {
     font-size: 0.9rem;
 }
 
-/* ===========================
-   Simulator Styles
-   =========================== */
+/* Simulator Styles */
 .highlight-winner {
     font-size: 1.5rem;
     font-weight: 600;
@@ -100,9 +95,7 @@ main {
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
 
-/* ===========================
-   How-It-Works Step Reveal
-   =========================== */
+/* How-It-Works Step Reveal */
 .tideman-step {
     display: none;
 }
@@ -111,9 +104,7 @@ main {
     display: block;
 }
 
-/* ===========================
-   Footer (Bootstrap-based)
-   =========================== */
+/* Footer */
 footer {
     color: #fff;
 }
@@ -134,13 +125,4 @@ footer .btn-outline-light {
 footer .btn-outline-light:hover {
     background-color: #fff;
     color: #A41D30;
-}
-
-/* ===========================
-   Responsive Adjustments
-   =========================== */
-@media (min-width: 768px) {
-    .main-section {
-        padding: 4rem 2rem;
-    }
 }

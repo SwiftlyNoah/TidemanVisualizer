@@ -24,4 +24,4 @@ BOOTSTRAP USAGE:
 I used Bootstrap many, many, times in my HTML code to provide layout through the grid system. I also used bootstrap for the navigation bar, cards, and and other components. Bootstrap allows for mobile-friendly websites and minimal CSS out of the box.
 
 REFLECTION:
-It was interesting building this website without some modern web design tools like React. Maybe they aren't so necessary after all ¯\_(ツ)_/¯
+It was interesting building this website without some modern web design tools like React. I did borrow a fair bit of UI boilerplate code from my past projects (e.g. header, footer, cards, homepage layout), but all of the fun Tideman-specific related code I wrote in the past week!
